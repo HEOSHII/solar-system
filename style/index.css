@@ -1,0 +1,12 @@
+body {
+  margin: 0;
+  padding: 0;
+  box-sizing: border-box;
+  outline: none;
+  background: rgb(38, 34, 53);
+  overflow: hidden;
+}
+
+canvas {
+  display: block;
+}
