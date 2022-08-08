@@ -1,93 +1,20 @@
 import { images } from './images.js';
+import { Satellite, Planet } from './classes.js';
 
 const canvas = document.getElementById('canvas');
-const context = canvas.getContext('2d');
+export const context = canvas.getContext('2d');
 
-let width = (canvas.width = window.innerWidth);
-let height = (canvas.height = window.innerHeight);
+export const deg = n => (n * Math.PI) / 180;
+export let width, height, centerX, centerY;
 
-let centerX = window.innerWidth / 2;
-let centerY = window.innerHeight / 2;
-
-const deg = n => (n * Math.PI) / 180;
-
-window.onresize = () => {
+const setSize = () => {
   width = canvas.width = window.innerWidth;
   height = canvas.height = window.innerHeight;
   centerX = width / 2;
   centerY = height / 2;
 };
-
-class Satellite {
-  /**
-   * @param {number}radius
-   * @param {number}speed
-   * @param {number}distance
-   * @param {number}angle
-   * @param {HTMLCanvasElement}image
-   */
-  constructor(radius, speed, distance, angle, image) {
-    this.radius = radius;
-    this.speed = speed;
-    this.distance = distance;
-    this.angle = angle;
-    this.image = image;
-  }
-}
-
-class Planet extends Satellite {
-  /**@param {[]}satellites */
-  draw(satellites) {
-    this.angle -= this.speed;
-    resetAngle(this.angle);
-    context.beginPath();
-    let r = this.distance;
-    let d = deg(this.angle);
-    const coordX = centerX + r * Math.sin(d);
-    const coordY = centerY + r * Math.cos(d);
-
-    context.beginPath();
-    context.drawImage(
-      this.image,
-      coordX - this.radius,
-      coordY - this.radius,
-      this.radius * 2,
-      this.radius * 2,
-    );
-    context.beginPath();
-    const shadow = context.createLinearGradient(coordX, coordY, centerX - 30, centerY - 30);
-    shadow.addColorStop(0, 'rgba(0,0,0,.9)');
-    shadow.addColorStop(0.05, 'transparent');
-    context.arc(coordX, coordY, this.radius + 1, 0, deg(360));
-    context.fillStyle = shadow;
-    context.fill();
-    if (!satellites) {
-      return;
-    } else {
-      satellites.forEach(satellite => {
-        satellite.angle -= satellite.speed;
-        resetAngle(satellite);
-        context.beginPath();
-        r = satellite.distance;
-        d = deg(satellite.angle);
-        const satX = coordX + r * Math.sin(d);
-        const satY = coordY + r * Math.cos(d);
-        context.beginPath();
-        context.drawImage(
-          satellite.image,
-          satX - satellite.radius,
-          satY - satellite.radius,
-          satellite.radius * 2,
-          satellite.radius * 2,
-        );
-
-        context.arc(satX, satY, satellite.radius + 1, 0, deg(360));
-        context.fillStyle = shadow;
-        context.fill();
-      });
-    }
-  }
-}
+setSize();
+window.onresize = setSize;
 
 const planets = {
   mercury: new Planet(7, 2.5, 90, 0, images.mercury),
@@ -111,37 +38,42 @@ const satellites = {
   callisto: new Satellite(4.8, 1.7, 90, 0, images.callisto),
 };
 
-const generalSettings = {
-  started: true,
-  speed: 15,
-  planetsGo: null,
+const stars = {
+  speed: { x: 5, y: 2 },
+  colors: ['#FFFFFF', '#F0FFFF', '#F0F8FF', '#F5FFFA', '#F0FFF0', 'darkred'],
+  count: width + height,
+  create() {
+    const arr = [];
+    for (let i = 0; i < this.count; i++) {
+      arr.push({
+        x: (Math.random() * width).toFixed(0),
+        y: (Math.random() * height).toFixed(0),
+        radius: Math.random().toFixed(1),
+        color: this.colors[(Math.random() * this.colors.length).toFixed(0)],
+        shift: {
+          x: this.speed.x,
+          y: this.speed.y,
+        },
+      });
+    }
+    return arr;
+  },
 };
 
-// ======= SETUP STARS ========= //
-const starsCoord = [];
-const startsCount = 2000;
-const starColors = ['#FFFFFF', '#F0FFFF', '#F0F8FF', '#F5FFFA', '#F0FFF0', 'darkred'];
-for (let i = 0; i < startsCount; i++) {
-  starsCoord.push({
-    x: (Math.random() * width).toFixed(0),
-    y: (Math.random() * height).toFixed(0),
-    size: Math.random().toFixed(1),
-    color: starColors[(Math.random() * starColors.length).toFixed(0)],
-  });
-}
-//============================= //
+const starsForRender = stars.create();
+
 // ========== METHODS ========== //
 const drawStars = () => {
-  for (const star of starsCoord) {
+  starsForRender.map(star => {
     context.beginPath();
-    context.arc(star.x, star.y, star.size, 0, deg(270));
+    context.arc(star.x, star.y, star.radius, 0, deg(270));
     context.fillStyle = star.color;
     context.fill();
-    star.x -= star.size * 4;
-    star.y -= star.size * 2;
+    star.x -= star.shift.x;
+    star.y -= star.shift.y;
     star.x = star.x < 0 ? star.x + width : star.x;
     star.y = star.y < 0 ? star.y + height : star.y;
-  }
+  });
 };
 
 const drawSun = () => {
@@ -169,12 +101,7 @@ const drawSun = () => {
   context.fill();
 };
 
-const resetAngle = planet => ([planet].angle === -360 ? ([planet].angle = 0) : [planet].angle);
-
-const init = () => {
-  context.clearRect(0, 0, width, height);
-  drawStars();
-  drawSun();
+const drawPlanets = () => {
   planets.mercury.draw();
   planets.venus.draw();
   planets.earth.draw([satellites.moon, satellites.satellite]);
@@ -190,14 +117,19 @@ const init = () => {
   planets.neptune.draw();
 };
 
-const loop = speed => {
-  generalSettings.started = true;
-  generalSettings.planetsGo = setInterval(init, speed);
+
+
+const nextFrame = () => {
+  context.clearRect(0, 0, width, height);
+  drawStars();
+  drawPlanets();
+  drawSun();
 };
 
-loop(generalSettings.speed);
-
-window.onclick = () => {
-  generalSettings.started = !generalSettings.started;
-  generalSettings.started ? loop(generalSettings.speed) : clearInterval(generalSettings.planetsGo);
+const loop = () => {
+  nextFrame();
+  window.requestAnimationFrame(loop);
 };
+
+nextFrame();
+loop();
