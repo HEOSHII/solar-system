@@ -76,8 +76,8 @@ const drawStars = () => {
 };
 
 const drawSun = () => {
-  const sunRadius = 50;
-  const lightRadius = 500;
+  const sunRadius = 25;
+  const lightRadius = 200;
   const sunShiningGradient = context.createRadialGradient(
     centerX,
     centerY,
@@ -87,7 +87,7 @@ const drawSun = () => {
     lightRadius,
   );
   sunShiningGradient.addColorStop(0, 'rgba(255,255,200, 1)');
-  sunShiningGradient.addColorStop(0.7, 'transparent');
+  sunShiningGradient.addColorStop(1, 'transparent');
 
   context.beginPath();
   context.arc(centerX, centerY, lightRadius, 0, deg(360));
