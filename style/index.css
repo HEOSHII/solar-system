@@ -3,7 +3,8 @@ body {
   padding: 0;
   box-sizing: border-box;
   outline: none;
-  background: rgb(38, 34, 53);
+  /* background: rgb(38, 34, 53); */
+  background: radial-gradient(rgb(38, 34, 53) 30%, black 100%);
   overflow: hidden;
 }
 
