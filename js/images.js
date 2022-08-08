@@ -3,7 +3,6 @@ export const images = {
   venus: new Image(),
   earth: new Image(),
   moon: new Image(),
-  satellite: new Image(),
   mars: new Image(),
   phobos: new Image(),
   deimos: new Image(),

@@ -29,7 +29,6 @@ const planets = {
 
 const satellites = {
   moon: new Satellite(5, 3.5, 40, 0, images.moon),
-  satellite: new Satellite(5, 6, 20, 0, images.satellite),
   phobos: new Satellite(7, 4, 40, 0, images.phobos),
   deimos: new Satellite(4, 6, 60, 0, images.deimos),
   io: new Satellite(4, 5, 50, 0, images.io),
@@ -104,7 +103,7 @@ const drawSun = () => {
 const drawPlanets = () => {
   planets.mercury.draw();
   planets.venus.draw();
-  planets.earth.draw([satellites.moon, satellites.satellite]);
+  planets.earth.draw([satellites.moon]);
   planets.mars.draw([satellites.phobos, satellites.deimos]);
   planets.jupiter.draw([
     satellites.io,
@@ -116,8 +115,6 @@ const drawPlanets = () => {
   planets.uranus.draw();
   planets.neptune.draw();
 };
-
-
 
 const nextFrame = () => {
   context.clearRect(0, 0, width, height);

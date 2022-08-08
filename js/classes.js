@@ -64,9 +64,17 @@ export class Planet extends Satellite {
           satellite.radius * 2,
           satellite.radius * 2,
         );
-
+        context.beginPath();
         context.arc(satX, satY, satellite.radius + 0.5, 0, deg(360));
         context.fillStyle = shadow;
+        context.fill();
+        context.beginPath();
+        const shadowSatellite = context.createLinearGradient(satX, satY, centerX, centerY);
+        shadowSatellite.addColorStop(0, 'rgba(0,0,0,.8)');
+        shadowSatellite.addColorStop(0.01, 'transparent');
+
+        context.arc(satX, satY, satellite.radius + 0.5, 0, deg(360));
+        context.fillStyle = shadowSatellite;
         context.fill();
       });
     }
