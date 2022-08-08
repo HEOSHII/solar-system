@@ -17,4 +17,4 @@ export const images = {
   callisto: new Image(),
 };
 
-Object.keys(images).map(key => (images[key].src = `../assets/${key}.png`));
+Object.keys(images).map(key => (images[key].src = `./assets/${key}.png`));
