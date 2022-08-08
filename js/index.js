@@ -39,6 +39,10 @@ const satellites = {
 
 const stars = {
   speed: { x: 5, y: 2 },
+  shift: {
+    x: 10,
+    y: 10,
+  },
   colors: ['#FFFFFF', '#F0FFFF', '#F0F8FF', '#F5FFFA', '#F0FFF0', 'darkred'],
   count: width + height,
   create() {
@@ -68,8 +72,8 @@ const drawStars = () => {
     context.arc(star.x, star.y, star.radius, 0, deg(270));
     context.fillStyle = star.color;
     context.fill();
-    star.x -= star.shift.x;
-    star.y -= star.shift.y;
+    star.x -= star.shift.x * star.radius;
+    star.y -= star.shift.y * star.radius;
     star.x = star.x < 0 ? star.x + width : star.x;
     star.y = star.y < 0 ? star.y + height : star.y;
   });
