@@ -54,6 +54,13 @@ class Planet extends Satellite {
       this.radius * 2,
       this.radius * 2,
     );
+    context.beginPath();
+    const shadow = context.createLinearGradient(coordX, coordY, centerX - 30, centerY - 30);
+    shadow.addColorStop(0, 'rgba(0,0,0,.9)');
+    shadow.addColorStop(0.05, 'transparent');
+    context.arc(coordX, coordY, this.radius + 1, 0, deg(360));
+    context.fillStyle = shadow;
+    context.fill();
     if (!satellites) {
       return;
     } else {
@@ -73,6 +80,10 @@ class Planet extends Satellite {
           satellite.radius * 2,
           satellite.radius * 2,
         );
+
+        context.arc(satX, satY, satellite.radius + 1, 0, deg(360));
+        context.fillStyle = shadow;
+        context.fill();
       });
     }
   }
